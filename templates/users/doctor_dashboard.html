@@ -1,0 +1,144 @@
+{% extends 'base.html' %}
+
+{% block title %}Doctor Dashboard - DigiMed{% endblock %}
+
+{% block content %}
+<h1 style="margin-bottom: 2rem;">Dr. {{ user.last_name }}'s Dashboard</h1>
+
+<div style="display: grid; grid-template-columns: 2fr 1fr; gap: 2rem;">
+    <div class="card">
+        <h2>Appointments</h2>
+        <table style="width: 100%; border-collapse: collapse; margin-top: 1rem;">
+            <thead>
+                <tr style="text-align: left; border-bottom: 2px solid var(--border);">
+                    <th style="padding: 1rem;">Patient</th>
+                    <th style="padding: 1rem;">Date & Time</th>
+                    <th style="padding: 1rem;">Symptoms</th>
+                    <th style="padding: 1rem;">Status</th>
+                    <th style="padding: 1rem;">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for appt in appointments %}
+                <tr style="border-bottom: 1px solid var(--border);">
+                    <td style="padding: 1rem;">{{ appt.patient.username }}</td>
+                    <td style="padding: 1rem;">{{ appt.date }} <br> <span
+                            style="color: var(--text-muted); font-size: 0.875rem;">{{ appt.time }}</span></td>
+                    <td style="padding: 1rem;">{{ appt.symptoms|truncatechars:50 }}</td>
+                    <td style="padding: 1rem;">{{ appt.get_status_display }}</td>
+                    <td style="padding: 1rem;">
+                        <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+                            <!-- Accept Action: Available if NOT Accepted and NOT Completed -->
+                            {% if appt.status != 'accepted' and appt.status != 'completed' %}
+                            <form method="post" action="{% url 'update_appointment' appt.id %}" style="display:inline;">
+                                {% csrf_token %}
+                                <input type="hidden" name="status" value="accepted">
+                                <button class="btn btn-secondary"
+                                    style="padding: 0.25rem 0.5rem; font-size: 0.875rem;">Accept</button>
+                            </form>
+                            {% endif %}
+
+                            <!-- Reject Action: Available if Pending or Accepted -->
+                            {% if appt.status == 'pending' or appt.status == 'accepted' %}
+                            <form method="post" action="{% url 'update_appointment' appt.id %}" style="display:inline;">
+                                {% csrf_token %}
+                                <input type="hidden" name="status" value="rejected">
+                                <button class="btn btn-secondary"
+                                    style="padding: 0.25rem 0.5rem; font-size: 0.875rem; color: var(--accent); border-color: var(--accent);">Reject</button>
+                            </form>
+                            {% endif %}
+
+                            <!-- Complete Action: Available if Accepted -->
+                            {% if appt.status == 'accepted' %}
+                            <form method="post" action="{% url 'update_appointment' appt.id %}" style="display:inline;">
+                                {% csrf_token %}
+                                <input type="hidden" name="status" value="completed">
+                                <button class="btn btn-primary"
+                                    style="padding: 0.25rem 0.5rem; font-size: 0.875rem; background: #10b981; border-color: #10b981; color: white;">Complete</button>
+                            </form>
+                            {% endif %}
+                        </div>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="5" style="padding: 2rem; text-align: center; color: var(--text-muted);">No appointments
+                        found.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <div class="card">
+        <h2>Availability & Profile</h2>
+        <form method="post" enctype="multipart/form-data" style="margin-top: 1rem;">
+            {% csrf_token %}
+
+            <div style="text-align: center; margin-bottom: 1.5rem;">
+                {% if profile.profile_picture %}
+                <img src="{{ profile.profile_picture.url }}" alt="Profile"
+                    style="width: 120px; height: 120px; border-radius: 50%; object-fit: cover; border: 4px solid #f0f9ff;">
+                {% else %}
+                <div
+                    style="width: 120px; height: 120px; border-radius: 50%; background: #e2e8f0; margin: 0 auto; display: flex; align-items: center; justify-content: center; color: var(--text-muted);">
+                    No Image
+                </div>
+                {% endif %}
+            </div>
+
+            {% if form.non_field_errors %}
+            <div style="color: var(--accent); margin-bottom: 1rem;">{{ form.non_field_errors }}</div>
+            {% endif %}
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem;">
+                <div class="form-group">
+                    <label class="form-label" style="font-size: 0.875rem;">First Name</label>
+                    {{ form.first_name }}
+                    {% if form.first_name.errors %}<div style="color: var(--accent); font-size: 0.75rem;">{{
+                        form.first_name.errors }}</div>{% endif %}
+                </div>
+                <div class="form-group">
+                    <label class="form-label" style="font-size: 0.875rem;">Last Name</label>
+                    {{ form.last_name }}
+                    {% if form.last_name.errors %}<div style="color: var(--accent); font-size: 0.75rem;">{{
+                        form.last_name.errors }}</div>{% endif %}
+                </div>
+            </div>
+
+            {% for field in form %}
+            {% if field.name != 'first_name' and field.name != 'last_name' %}
+            <div class="form-group" style="margin-bottom: 1rem;">
+                <label class="form-label" style="font-size: 0.875rem;">{{ field.label }}</label>
+
+                {% if field.name == 'remove_picture' %}
+                {% if profile.profile_picture %}
+                <div
+                    style="display: flex; align-items: center; gap: 0.5rem; margin-top: 0.5rem; padding: 0.5rem; background: #fee2e2; border-radius: 4px; color: #991b1b;">
+                    {{ field }}
+                    <label for="{{ field.id_for_label }}"
+                        style="margin: 0; font-size: 0.875rem; font-weight: 500;">Delete current profile picture</label>
+                </div>
+                {% endif %}
+                {% elif field.name == 'profile_picture' %}
+                <div style="margin-top: 0.25rem;">
+                    {{ field }}
+                </div>
+                {% else %}
+                {{ field }}
+                {% endif %}
+
+                {% if field.errors %}
+                <div style="color: var(--accent); font-size: 0.75rem;">{{ field.errors }}</div>
+                {% endif %}
+                {% if field.help_text %}
+                <small style="color: var(--text-muted); font-size: 0.75rem;">{{ field.help_text }}</small>
+                {% endif %}
+            </div>
+            {% endif %}
+            {% endfor %}
+            <button type="submit" class="btn btn-primary" style="width: 100%;">Save Changes</button>
+        </form>
+    </div>
+</div>
+{% endblock %}

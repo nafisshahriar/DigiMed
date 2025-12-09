@@ -1,0 +1,65 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}DigiMed - Your Health Partner{% endblock %}
+
+{% block full_width_content %}
+<section class="hero"
+    style="text-align: center; padding: 6rem 1rem; background: linear-gradient(135deg, white 0%, #f0f9ff 100%); margin-bottom: 2rem;">
+    <div class="container">
+        <h1
+            style="font-size: 3.5rem; margin-bottom: 1.5rem; background: linear-gradient(to right, var(--primary), var(--secondary)); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;">
+            Healthcare Reimagined
+        </h1>
+        <p style="font-size: 1.25rem; color: var(--text-muted); max-width: 600px; margin: 0 auto 2rem;">
+            Connect with top doctors, manage appointments, and take control of your health journey with DigiMed. This is
+            the
+            future of medical management.
+        </p>
+
+        <div style="margin-bottom: 3rem;">
+            <img src="{% static 'img/banner.jpg' %}" alt="DigiMed Dashboard"
+                style="width: 70vw; border-radius: 1rem; box-shadow: var(--shadow-lg);">
+        </div>
+
+        {% if not user.is_authenticated %}
+        <div style="display: flex; gap: 1rem; justify-content: center;">
+            <a href="{% url 'signup' %}" class="btn btn-primary" style="padding: 0.75rem 2rem; font-size: 1.1rem;">Join
+                Now</a>
+            <a href="{% url 'login' %}" class="btn btn-secondary"
+                style="padding: 0.75rem 2rem; font-size: 1.1rem;">Login</a>
+        </div>
+        {% else %}
+        <div style="display: flex; gap: 1rem; justify-content: center;">
+            <a href="{% url 'dashboard' %}" class="btn btn-primary" style="padding: 0.75rem 2rem; font-size: 1.1rem;">Go
+                to Dashboard</a>
+        </div>
+        {% endif %}
+    </div>
+</section>
+{% endblock %}
+
+{% block content %}
+<section class="features"
+    style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 2rem; margin-top: 4rem;">
+    <div class="card">
+        <h3 style="color: var(--primary);">For Patients</h3>
+        <p style="color: var(--text-muted); margin-top: 0.5rem;">
+            Find specialists, book appointments tailored to your schedule, and keep track of your medical history
+            securely.
+        </p>
+    </div>
+    <div class="card">
+        <h3 style="color: var(--secondary);">For Doctors</h3>
+        <p style="color: var(--text-muted); margin-top: 0.5rem;">
+            Manage your practice efficiently. viewing upcoming appointments and patient records at a glance.
+        </p>
+    </div>
+    <div class="card">
+        <h3 style="color: var(--accent);">Secure & Reliable</h3>
+        <p style="color: var(--text-muted); margin-top: 0.5rem;">
+            Your data is protected with enterprise-grade security. Focus on health, we handle the rest.
+        </p>
+    </div>
+</section>
+{% endblock %}

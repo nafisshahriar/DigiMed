@@ -1,0 +1,75 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}DigiMed{% endblock %}</title>
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    {% block extra_css %}{% endblock %}
+</head>
+
+<body>
+    <nav class="navbar">
+        <div class="container nav-content">
+            <a href="{% url 'home' %}" class="nav-brand">DigiMed</a>
+            <div class="nav-links">
+                {% if user.is_authenticated %}
+                {% if user.is_staff %}
+                <a href="{% url 'admin_analytics' %}" class="nav-link"
+                    style="color: var(--accent); font-weight: 600;">Admin Dashboard</a>
+                {% endif %}
+                {% if user.is_doctor %}
+                <a href="{% url 'doctor_dashboard' %}" class="nav-link">Dashboard</a>
+                {% elif user.is_patient %}
+                <a href="{% url 'patient_dashboard' %}" class="nav-link">Dashboard</a>
+                {% endif %}
+                <span class="nav-link" style="color: var(--text-main); font-weight: 600;">{{ user.username }}</span>
+                <form method="post" action="{% url 'logout' %}" style="display:inline;">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-secondary"
+                        style="padding: 0.5rem 1rem; font-size: 0.875rem;">Logout</button>
+                </form>
+                {% else %}
+                <a href="{% url 'login' %}" class="nav-link">Login</a>
+                <a href="{% url 'signup' %}" class="btn btn-primary">Get Started</a>
+                {% endif %}
+            </div>
+        </div>
+    </nav>
+
+    {% if messages %}
+    <div class="container" style="margin-top: 2rem;">
+        {% for message in messages %}
+        <div class="card"
+            style="padding: 1rem; margin-bottom: 1rem; background-color: #f0fdf4; border-left: 4px solid #4ade80;">
+            {{ message }}
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    {% block full_width_content %}{% endblock %}
+
+    <main class="container" style="padding-top: 2rem; padding-bottom: 4rem;">
+        {% block content %}
+        {% endblock %}
+    </main>
+
+    <footer
+        style="background: var(--surface); border-top: 1px solid var(--border); padding: 1rem 0; text-align: center; color: var(--text-muted); margin-top: auto; font-size: 0.875rem;">
+        <div class="container">
+            <p>&copy; {% now "Y" %} DigiMed Health Platform. All rights reserved.</p>
+        </div>
+    </footer>
+</body>
+
+</html>

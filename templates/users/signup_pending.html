@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+
+{% block title %}Application Pending - DigiMed{% endblock %}
+
+{% block content %}
+<div style="max-width: 600px; margin: 4rem auto; text-align: center;">
+    <div class="card">
+        <h2 style="color: var(--primary); margin-bottom: 1rem;">Application Submitted</h2>
+        <p style="color: var(--text-muted); font-size: 1.125rem; margin-bottom: 2rem;">
+            Thank you for applying to join DigiMed as a specialist. Your account is currently pending verification.
+            <br><br>
+            Our administration team will review your credentials. Once approved, you will be able to log in and manage
+            your practice.
+        </p>
+        <a href="{% url 'home' %}" class="btn btn-secondary">Return Home</a>
+    </div>
+</div>
+{% endblock %}

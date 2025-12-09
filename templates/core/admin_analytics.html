@@ -1,0 +1,123 @@
+{% extends 'base.html' %}
+
+{% block title %}Admin Analytics - DigiMed{% endblock %}
+
+{% block content %}
+<h1 style="margin-bottom: 2rem;">Admin Dashboard</h1>
+
+{% if pending_doctors %}
+<div class="card" style="margin-bottom: 2rem;">
+    <h2>Pending Approvals</h2>
+    <div style="overflow-x: auto;">
+        <table style="width: 100%; border-collapse: collapse; margin-top: 1rem;">
+            <thead>
+                <tr style="text-align: left; border-bottom: 2px solid var(--border);">
+                    <th style="padding: 0.5rem;">Doctor</th>
+                    <th style="padding: 0.5rem;">Specialization</th>
+                    <th style="padding: 0.5rem;">Applied Date</th>
+                    <th style="padding: 0.5rem; text-align: right;">Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for doctor in pending_doctors %}
+                <tr style="border-bottom: 1px solid var(--border);">
+                    <td style="padding: 0.5rem;">Dr. {{ doctor.user.first_name }} {{ doctor.user.last_name }}</td>
+                    <td style="padding: 0.5rem; color: var(--text-muted);">{{ doctor.specialization }}</td>
+                    <td style="padding: 0.5rem;">{{ doctor.user.date_joined|date:"M d, Y" }}</td>
+                    <td style="padding: 0.5rem; text-align: right;">
+                        <a href="{% url 'approve_doctor' doctor.user.id %}"
+                            style="background: #10b981; color: white; padding: 0.25rem 0.75rem; border-radius: 0.25rem; text-decoration: none; font-size: 0.875rem; margin-right: 0.5rem;">
+                            Approve
+                        </a>
+                        <a href="{% url 'reject_doctor' doctor.user.id %}"
+                            style="background: #ef4444; color: white; padding: 0.25rem 0.75rem; border-radius: 0.25rem; text-decoration: none; font-size: 0.875rem;"
+                            onclick="return confirm('Are you sure you want to reject this doctor?')">
+                            Reject
+                        </a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endif %}
+
+<div style="margin-bottom: 2rem; display: flex; justify-content: flex-end;">
+    <form method="get" style="display: flex; gap: 0.5rem; align-items: center;">
+        <label for="date-filter" style="font-weight: 500;">Filter Date:</label>
+        <input type="date" name="date" id="date-filter" value="{{ today|date:'Y-m-d' }}"
+            style="padding: 0.5rem; border: 1px solid var(--border); border-radius: var(--radius-sm);"
+            onchange="this.form.submit()">
+    </form>
+</div>
+
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); gap: 2rem;">
+    <div class="card">
+        <h2>Remaining Appointments ({{ today|date:"M d" }})</h2>
+        <table style="width: 100%; border-collapse: collapse; margin-top: 1rem;">
+            <thead>
+                <tr style="text-align: left; border-bottom: 2px solid var(--border);">
+                    <th style="padding: 0.5rem;">Doctor</th>
+                    <th style="padding: 0.5rem;">Specialization</th>
+                    <th style="padding: 0.5rem; text-align: right;">Remaining</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in appointments_by_doctor %}
+                <tr style="border-bottom: 1px solid var(--border);">
+                    <td style="padding: 0.5rem;">Dr. {{ item.doctor__first_name }} {{ item.doctor__last_name }}</td>
+                    <td style="padding: 0.5rem; color: var(--text-muted);">{{ item.specialization }}</td>
+                    <td style="padding: 0.5rem; text-align: right; font-weight: bold;">{{ item.count }}</td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="3" style="padding: 1rem; text-align: center; color: var(--text-muted);">All clear for
+                        today!</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <div class="card">
+        <h2>Specializations</h2>
+        <div style="margin-top: 1rem;">
+            <div style="display: flex; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 1.5rem;">
+                {% for spec in specializations %}
+                <span
+                    style="background: #e0f2fe; color: #0284c7; padding: 0.25rem 0.75rem; border-radius: 999px; font-size: 0.875rem;">
+                    {{ spec.name }}
+                </span>
+                {% empty %}
+                <p style="color: var(--text-muted);">No specializations added yet.</p>
+                {% endfor %}
+            </div>
+
+            <form method="post" action="{% url 'add_specialization' %}" style="display: flex; gap: 0.5rem;">
+                {% csrf_token %}
+                <input type="text" name="name" placeholder="New Specialization" required
+                    style="flex: 1; padding: 0.5rem; border: 1px solid var(--border); border-radius: var(--radius-sm);">
+                <button type="submit" class="btn btn-primary" style="padding: 0.5rem 1rem;">Add</button>
+            </form>
+        </div>
+    </div>
+
+    <div class="card">
+        <h2>Appointments by Day</h2>
+        <div style="margin-top: 1rem; display: flex; flex-direction: column; gap: 0.5rem;">
+            {% for item in appointments_by_day %}
+            <div style="display: flex; align-items: center; gap: 1rem;">
+                <div style="width: 100px; color: var(--text-muted);">{{ item.date|date:"M d" }}</div>
+                <div style="flex: 1; background: #e2e8f0; height: 24px; border-radius: 12px; overflow: hidden;">
+                    <div
+                        style="width: calc(({{ item.count }} / {{ total_appointments_chart }}) * 100%); background: var(--secondary); height: 100%;">
+                    </div>
+                </div>
+                <div style="width: 30px; text-align: right;">{{ item.count }}</div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endblock %}

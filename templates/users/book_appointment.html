@@ -1,0 +1,88 @@
+{% extends 'base.html' %}
+
+{% block title %}Book Appointment - DigiMed{% endblock %}
+
+{% block content %}
+<div style="max-width: 800px; margin: 0 auto;">
+    <div class="card">
+        <h2 style="margin-bottom: 0.5rem;">Book Appointment</h2>
+        <p style="margin-bottom: 2rem; color: var(--text-muted);">
+            Scheduling with <strong>Dr. {{ doctor.last_name }}</strong> ({{ doctor.doctor_profile.specialization }})
+            <br>
+            Availability: {{ doctor.doctor_profile.working_days }} | {{ doctor.doctor_profile.start_time }} - {{
+            doctor.doctor_profile.end_time }}
+        </p>
+
+        <form method="get" id="dateForm"
+            style="margin-bottom: 2rem; padding-bottom: 2rem; border-bottom: 1px solid var(--border);">
+            <label class="form-label">Step 1: Select a Date</label>
+            <div style="display: flex; gap: 1rem;">
+                <input type="date" name="date" class="form-control" value="{{ selected_date }}" required
+                    min="{% now 'Y-m-d' %}" onchange="this.form.submit()">
+                <button type="submit" class="btn btn-secondary">Check Slots</button>
+            </div>
+        </form>
+
+        {% if selected_date %}
+        <h3 style="margin-bottom: 1rem;">Step 2: Select a Time Slot for {{ selected_date }}</h3>
+
+        {% if error %}
+        <div
+            style="color: var(--accent); margin-bottom: 1rem; padding: 0.5rem; background: #fee2e2; border-radius: var(--radius-sm);">
+            {{ error }}</div>
+        {% endif %}
+
+        <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); gap: 1rem;">
+            {% for slot in slots %}
+            <button type="button" class="btn btn-secondary slot-btn" onclick="selectSlot('{{ slot }}')"
+                style="width: 100%;">
+                {{ slot }}
+            </button>
+            {% empty %}
+            <p style="grid-column: 1 / -1; color: var(--text-muted);">No slots available on this date. Please try
+                another date.</p>
+            {% endfor %}
+        </div>
+
+        <form method="post" id="bookingForm"
+            style="display: none; margin-top: 2rem; animation: slideDown 0.3s ease-out;">
+            {% csrf_token %}
+            <input type="hidden" name="date" value="{{ selected_date }}">
+            <input type="hidden" name="time" id="selectedTime">
+
+            <div class="card" style="background: var(--background); border: none;">
+                <h4 style="margin-bottom: 1rem;">Confirm Booking for <span id="displayTime"></span></h4>
+                <div class="form-group">
+                    <label class="form-label">Symptoms / Reason for Visit</label>
+                    <textarea name="symptoms" class="form-control" rows="3" required
+                        placeholder="Briefly describe your symptoms..."></textarea>
+                </div>
+
+                <div style="display: flex; gap: 1rem;">
+                    <button type="submit" class="btn btn-primary" style="flex: 1;">Confirm Booking</button>
+                    <a href="{% url 'patient_dashboard' %}" class="btn btn-secondary">Cancel</a>
+                </div>
+            </div>
+        </form>
+        {% endif %}
+    </div>
+</div>
+
+<script>
+    function selectSlot(time) {
+        document.getElementById('bookingForm').style.display = 'block';
+        document.getElementById('selectedTime').value = time;
+        document.getElementById('displayTime').innerText = time;
+
+        // Highlight selected
+        document.querySelectorAll('.slot-btn').forEach(btn => {
+            btn.style.borderColor = 'var(--border)';
+            btn.style.background = 'white';
+            btn.style.color = 'var(--text-main)';
+        });
+        event.target.style.borderColor = 'var(--primary)';
+        event.target.style.background = 'var(--primary)';
+        event.target.style.color = 'white';
+    }
+</script>
+{% endblock %}

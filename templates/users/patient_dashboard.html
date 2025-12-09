@@ -1,0 +1,81 @@
+{% extends 'base.html' %}
+
+{% block title %}Patient Dashboard - DigiMed{% endblock %}
+
+{% block content %}
+<h1 style="margin-bottom: 2rem;">Welcome, {{ user.username }}</h1>
+
+<div style="display: grid; grid-template-columns: 2fr 1fr; gap: 2rem;">
+    <div>
+        <div class="card" style="margin-bottom: 2rem;">
+            <h2>Find a Doctor</h2>
+            <div
+                style="display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 1rem; margin-top: 1rem;">
+                {% for doc in doctors %}
+                <div style="border: 1px solid var(--border); padding: 1rem; border-radius: var(--radius-md);">
+                    {% if doc.profile_picture %}
+                    <img src="{{ doc.profile_picture.url }}" alt="{{ doc.user.username }}"
+                        style="width: 100%; height: 150px; object-fit: cover; border-radius: var(--radius-sm); margin-bottom: 0.5rem;">
+                    {% else %}
+                    <div
+                        style="width: 100%; height: 150px; background: #e2e8f0; display: flex; align-items: center; justify-content: center; border-radius: var(--radius-sm); margin-bottom: 0.5rem; color: #64748b;">
+                        No Image</div>
+                    {% endif %}
+                    <h4 style="margin-bottom: 0.25rem;">Dr. {{ doc.user.first_name }} {{ doc.user.last_name }}</h4>
+                    <p style="color: var(--text-muted); font-size: 0.875rem;">{{ doc.specialization }}</p>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; margin-top: 0.5rem;">
+                        <a href="{% url 'doctor_detail' doc.user.id %}" class="btn btn-secondary"
+                            style="font-size: 0.875rem;">Profile</a>
+                        <a href="{% url 'book_appointment' doc.user.id %}" class="btn btn-primary"
+                            style="font-size: 0.875rem;">Book</a>
+                    </div>
+                </div>
+                {% empty %}
+                <p>No doctors available yet.</p>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
+    <div>
+        <div class="card" style="margin-bottom: 2rem;">
+            <h2>My Profile</h2>
+            <form method="post" style="margin-top: 1rem;">
+                {% csrf_token %}
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem;">
+                    <div class="form-group">
+                        <label class="form-label">First Name</label>
+                        {{ form.first_name }}
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Last Name</label>
+                        {{ form.last_name }}
+                    </div>
+                </div>
+                <button type="submit" class="btn btn-secondary" style="width: 100%;">Update Name</button>
+            </form>
+        </div>
+
+        <div class="card">
+            <h2>My Appointments</h2>
+            <div style="margin-top: 1rem;">
+                {% for appt in appointments %}
+                <div
+                    style="padding: 1rem; border-bottom: 1px solid var(--border); {% if forloop.last %}border-bottom: none;{% endif %}">
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 0.25rem;">
+                        <strong>Dr. {{ appt.doctor.first_name }} {{ appt.doctor.last_name }}</strong>
+                        <span
+                            style="font-size: 0.875rem; padding: 0.25rem 0.5rem; border-radius: 999px; background: #e2e8f0;">
+                            {{ appt.get_status_display }}
+                        </span>
+                    </div>
+                    <p style="color: var(--text-muted); font-size: 0.875rem;">{{ appt.date }} at {{ appt.time }}</p>
+                </div>
+                {% empty %}
+                <p style="color: var(--text-muted);">No appointments booked.</p>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

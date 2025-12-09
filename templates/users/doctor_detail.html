@@ -1,0 +1,43 @@
+{% extends 'base.html' %}
+
+{% block title %}Dr. {{ doctor.last_name }} - DigiMed{% endblock %}
+
+{% block content %}
+<div style="max-width: 800px; margin: 0 auto;">
+    <div class="card">
+        <div style="display: flex; gap: 2rem; align-items: flex-start; flex-wrap: wrap;">
+            {% if doctor.doctor_profile.profile_picture %}
+            <img src="{{ doctor.doctor_profile.profile_picture.url }}" alt="{{ doctor.username }}"
+                style="width: 200px; height: 200px; object-fit: cover; border-radius: var(--radius-md);">
+            {% else %}
+            <div
+                style="width: 200px; height: 200px; background: #e2e8f0; border-radius: var(--radius-md); display: flex; align-items: center; justify-content: center; color: var(--text-muted);">
+                No Image
+            </div>
+            {% endif %}
+
+            <div style="flex: 1;">
+                <h1 style="margin-bottom: 0.5rem; color: var(--primary);">Dr. {{ doctor.first_name }} {{
+                    doctor.last_name }}</h1>
+                <p style="font-size: 1.25rem; font-weight: 600; color: var(--text-muted); margin-bottom: 1rem;">
+                    {{ doctor.doctor_profile.specialization.name }}
+                </p>
+
+                <div style="margin-bottom: 1.5rem;">
+                    <h3 style="font-size: 1rem; margin-bottom: 0.5rem;">About</h3>
+                    <p style="line-height: 1.6;">{{ doctor.doctor_profile.bio|default:"No biography available." }}</p>
+                </div>
+
+                <div style="margin-bottom: 1.5rem;">
+                    <h3 style="font-size: 1rem; margin-bottom: 0.5rem;">Availability</h3>
+                    <p>{{ doctor.doctor_profile.working_days }}</p>
+                    <p>{{ doctor.doctor_profile.start_time }} - {{ doctor.doctor_profile.end_time }}</p>
+                </div>
+
+                <a href="{% url 'book_appointment' doctor.id %}" class="btn btn-primary"
+                    style="padding: 0.75rem 2rem;">Book Appointment</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
