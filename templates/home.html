@@ -4,39 +4,119 @@
 {% block title %}DigiMed - Your Health Partner{% endblock %}
 
 {% block full_width_content %}
-<section class="hero"
-    style="text-align: center; padding: 6rem 1rem; background: linear-gradient(135deg, white 0%, #f0f9ff 100%); margin-bottom: 2rem;">
-    <div class="container">
-        <h1
-            style="font-size: 3.5rem; margin-bottom: 1.5rem; background: linear-gradient(to right, var(--primary), var(--secondary)); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;">
-            Healthcare Reimagined
-        </h1>
-        <p style="font-size: 1.25rem; color: var(--text-muted); max-width: 600px; margin: 0 auto 2rem;">
-            Connect with top doctors, manage appointments, and take control of your health journey with DigiMed. This is
-            the
-            future of medical management.
-        </p>
-
-        <div style="margin-bottom: 3rem;">
-            <img src="{% static 'img/banner.jpg' %}" alt="DigiMed Dashboard"
-                style="width: 70vw; border-radius: 1rem; box-shadow: var(--shadow-lg);">
+<section class="slideshow">
+    <div class="slideshow-inner">
+        <!-- Slide 1 -->
+        <div class="slide active">
+            <video class="slide-video" muted autoplay playsinline>
+                <source src="{% static 'img/banner1.mp4' %}" type="video/mp4">
+            </video>
+            <div class="slide-content">
+                <h1>Healthcare Reimagined</h1>
+                <p>Connect with top doctors, manage appointments, and take control of your health journey with DigiMed.
+                </p>
+                {% if not user.is_authenticated %}
+                <div class="slide-buttons">
+                    <a href="{% url 'login' %}" class="btn btn-secondary"
+                        style="background: rgba(255,255,255,0.2); color: white; border-color: rgba(255,255,255,0.3);">Login</a>
+                    <a href="{% url 'signup' %}" class="btn btn-primary">Get Started</a>
+                </div>
+                {% else %}
+                <div class="slide-buttons">
+                    <a href="{% url 'dashboard' %}" class="btn btn-primary">Go to Dashboard</a>
+                </div>
+                {% endif %}
+            </div>
         </div>
 
-        {% if not user.is_authenticated %}
-        <div style="display: flex; gap: 1rem; justify-content: center;">
-            <a href="{% url 'signup' %}" class="btn btn-primary" style="padding: 0.75rem 2rem; font-size: 1.1rem;">Join
-                Now</a>
-            <a href="{% url 'login' %}" class="btn btn-secondary"
-                style="padding: 0.75rem 2rem; font-size: 1.1rem;">Login</a>
+        <!-- Slide 2 -->
+        <div class="slide">
+            <video class="slide-video" muted autoplay playsinline>
+                <source src="{% static 'img/banner2.mp4' %}" type="video/mp4">
+            </video>
+            <div class="slide-content">
+                <h1>Find Your Specialist</h1>
+                <p>Browse through our network of verified healthcare professionals and book appointments instantly.</p>
+                {% if not user.is_authenticated %}
+                <div class="slide-buttons">
+                    <a href="{% url 'login' %}" class="btn btn-secondary"
+                        style="background: rgba(255,255,255,0.2); color: white; border-color: rgba(255,255,255,0.3);">Login</a>
+                    <a href="{% url 'signup' %}" class="btn btn-primary">Get Started</a>
+                </div>
+                {% else %}
+                <div class="slide-buttons">
+                    <a href="{% url 'dashboard' %}" class="btn btn-primary">Browse Doctors</a>
+                </div>
+                {% endif %}
+            </div>
         </div>
-        {% else %}
-        <div style="display: flex; gap: 1rem; justify-content: center;">
-            <a href="{% url 'dashboard' %}" class="btn btn-primary" style="padding: 0.75rem 2rem; font-size: 1.1rem;">Go
-                to Dashboard</a>
-        </div>
-        {% endif %}
+    </div>
+
+    <!-- Navigation Arrows -->
+    <button class="slideshow-arrow prev" onclick="changeSlide(-1)">&#10094;</button>
+    <button class="slideshow-arrow next" onclick="changeSlide(1)">&#10095;</button>
+
+    <!-- Dot Indicators -->
+    <div class="slideshow-dots">
+        <button class="slideshow-dot active" onclick="goToSlide(0)"></button>
+        <button class="slideshow-dot" onclick="goToSlide(1)"></button>
     </div>
 </section>
+
+<script>
+    let currentSlide = 0;
+    const slides = document.querySelectorAll('.slide');
+    const dots = document.querySelectorAll('.slideshow-dot');
+    const videos = document.querySelectorAll('.slide-video');
+
+    function showSlide(index) {
+        if (index >= slides.length) currentSlide = 0;
+        if (index < 0) currentSlide = slides.length - 1;
+
+        slides.forEach((slide, i) => {
+            slide.classList.remove('active');
+            // Pause all videos and reset to beginning
+            if (videos[i]) {
+                videos[i].pause();
+                videos[i].currentTime = 0;
+            }
+        });
+        dots.forEach(dot => dot.classList.remove('active'));
+
+        slides[currentSlide].classList.add('active');
+        dots[currentSlide].classList.add('active');
+
+        // Play the current video
+        if (videos[currentSlide]) {
+            videos[currentSlide].play();
+        }
+    }
+
+    function changeSlide(direction) {
+        currentSlide += direction;
+        showSlide(currentSlide);
+    }
+
+    function goToSlide(index) {
+        currentSlide = index;
+        showSlide(currentSlide);
+    }
+
+    // Listen for video end to advance to next slide
+    videos.forEach((video, index) => {
+        video.addEventListener('ended', () => {
+            if (index === currentSlide) {
+                currentSlide++;
+                showSlide(currentSlide);
+            }
+        });
+    });
+
+    // Start the first video
+    if (videos[0]) {
+        videos[0].play();
+    }
+</script>
 {% endblock %}
 
 {% block content %}
@@ -52,7 +132,7 @@
     <div class="card">
         <h3 style="color: var(--secondary);">For Doctors</h3>
         <p style="color: var(--text-muted); margin-top: 0.5rem;">
-            Manage your practice efficiently. viewing upcoming appointments and patient records at a glance.
+            Manage your practice efficiently, viewing upcoming appointments and patient records at a glance.
         </p>
     </div>
     <div class="card">

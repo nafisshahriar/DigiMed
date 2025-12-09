@@ -3,7 +3,7 @@
 {% block title %}Patient Dashboard - DigiMed{% endblock %}
 
 {% block content %}
-<h1 style="margin-bottom: 2rem;">Welcome, {{ user.username }}</h1>
+<h1 style="margin-bottom: 2rem;">Welcome, {{ user.first_name|default:user.username }}</h1>
 
 <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 2rem;">
     <div>
