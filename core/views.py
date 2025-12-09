@@ -100,6 +100,21 @@ def add_specialization(request):
         Specialization.objects.get_or_create(name=name)
     
     return redirect('admin_analytics')
+
+@login_required
+def remove_specialization(request, spec_id):
+    if not request.user.is_staff:
+        return redirect('home')
+    
+    from users.models import Specialization
+    try:
+        spec = Specialization.objects.get(pk=spec_id)
+        spec.delete()
+    except Specialization.DoesNotExist:
+        pass
+    
+    return redirect('admin_analytics')
+
 def reject_doctor(request, doctor_id):
     if not request.user.is_staff:
         return redirect('home')

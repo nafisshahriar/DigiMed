@@ -86,8 +86,11 @@
             <div style="display: flex; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 1.5rem;">
                 {% for spec in specializations %}
                 <span
-                    style="background: #e0f2fe; color: #0284c7; padding: 0.25rem 0.75rem; border-radius: 999px; font-size: 0.875rem;">
+                    style="background: #e0f2fe; color: #0284c7; padding: 0.25rem 0.75rem; border-radius: 999px; font-size: 0.875rem; display: flex; align-items: center; gap: 0.5rem;">
                     {{ spec.name }}
+                    <a href="{% url 'remove_specialization' spec.id %}"
+                        onclick="return confirm('Remove this specialization?')"
+                        style="color: #ef4444; font-weight: bold; text-decoration: none; font-size: 1rem; line-height: 1;">&times;</a>
                 </span>
                 {% empty %}
                 <p style="color: var(--text-muted);">No specializations added yet.</p>

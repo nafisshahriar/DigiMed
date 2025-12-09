@@ -59,17 +59,18 @@
 
     {% block full_width_content %}{% endblock %}
 
-    <main class="container" style="padding-top: 2rem; padding-bottom: 4rem;">
+    <main class="container" style="padding-top: 2rem; padding-bottom: 2rem;">
         {% block content %}
         {% endblock %}
     </main>
 
     <footer
-        style="background: var(--surface); border-top: 1px solid var(--border); padding: 1rem 0; text-align: center; color: var(--text-muted); margin-top: auto; font-size: 0.875rem;">
+        style="background: var(--surface); border-top: 1px solid var(--border); padding: 1rem 0; text-align: center; color: var(--text-muted); font-size: 0.875rem;">
         <div class="container">
             <p>&copy; {% now "Y" %} DigiMed Health Platform. All rights reserved.</p>
         </div>
     </footer>
+
 </body>
 
 </html>

@@ -6,8 +6,8 @@
 <div style="max-width: 800px; margin: 0 auto;">
     <div class="card">
         <div style="display: flex; gap: 2rem; align-items: flex-start; flex-wrap: wrap;">
-            {% if doctor.doctor_profile.profile_picture %}
-            <img src="{{ doctor.doctor_profile.profile_picture.url }}" alt="{{ doctor.username }}"
+            {% if profile.profile_picture %}
+            <img src="{{ profile.profile_picture.url }}" alt="{{ doctor.username }}"
                 style="width: 200px; height: 200px; object-fit: cover; border-radius: var(--radius-md);">
             {% else %}
             <div
@@ -17,21 +17,20 @@
             {% endif %}
 
             <div style="flex: 1;">
-                <h1 style="margin-bottom: 0.5rem; color: var(--primary);">Dr. {{ doctor.first_name }} {{
-                    doctor.last_name }}</h1>
+                <h1 style="margin-bottom: 0.5rem; color: var(--primary);">Dr. {{ doctor.first_name }} {{ doctor.last_name }}</h1>
                 <p style="font-size: 1.25rem; font-weight: 600; color: var(--text-muted); margin-bottom: 1rem;">
-                    {{ doctor.doctor_profile.specialization.name }}
+                    {{ profile.specialization }}
                 </p>
 
                 <div style="margin-bottom: 1.5rem;">
                     <h3 style="font-size: 1rem; margin-bottom: 0.5rem;">About</h3>
-                    <p style="line-height: 1.6;">{{ doctor.doctor_profile.bio|default:"No biography available." }}</p>
+                    <p style="line-height: 1.6;">{{ profile.bio|default:"No biography available." }}</p>
                 </div>
 
                 <div style="margin-bottom: 1.5rem;">
                     <h3 style="font-size: 1rem; margin-bottom: 0.5rem;">Availability</h3>
-                    <p>{{ doctor.doctor_profile.working_days }}</p>
-                    <p>{{ doctor.doctor_profile.start_time }} - {{ doctor.doctor_profile.end_time }}</p>
+                    <p>{{ profile.working_days }}</p>
+                    <p>{{ profile.start_time }} - {{ profile.end_time }}</p>
                 </div>
 
                 <a href="{% url 'book_appointment' doctor.id %}" class="btn btn-primary"

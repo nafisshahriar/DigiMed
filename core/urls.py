@@ -9,4 +9,5 @@ urlpatterns = [
     path('approve-doctor/<int:doctor_id>/', views.approve_doctor, name='approve_doctor'),
     path('reject-doctor/<int:doctor_id>/', views.reject_doctor, name='reject_doctor'),
     path('add_specialization/', views.add_specialization, name='add_specialization'),
+    path('remove_specialization/<int:spec_id>/', views.remove_specialization, name='remove_specialization'),
 ]

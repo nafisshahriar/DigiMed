@@ -130,6 +130,7 @@ def book_appointment(request, doctor_id):
         
     return render(request, 'users/book_appointment.html', {
         'doctor': doctor_user,
+        'profile': doctor_profile,
         'slots': slots,
         'selected_date': selected_date
     })
@@ -164,7 +165,10 @@ def doctor_detail(request, doctor_id):
     except User.DoesNotExist:
         return redirect('home')
         
-    return render(request, 'users/doctor_detail.html', {'doctor': doctor})
+    return render(request, 'users/doctor_detail.html', {
+        'doctor': doctor,
+        'profile': getattr(doctor, 'doctor_profile', None)
+    })
     
 # Add User import if not present at top, I will assume it's there or I need to add it.
 # Actually I need to check imports. I'll include imports in this replacement block just in case to be safe?
